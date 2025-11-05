@@ -49,9 +49,3 @@ def get_website_screenshot(url:str) -> str:
         page.screenshot(path=screenshot_path, full_page=True)
         browser.close()
     return screenshot_path
-
-
-if __name__ == "__main__":
-    url = "https://motherduck.com/"
-    css = get_website_css(url)
-    print(css)
