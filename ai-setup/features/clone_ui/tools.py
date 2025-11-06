@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 from ...tools import load_settings
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def get_website_css(url:str) -> str:

@@ -1,6 +1,8 @@
 SYSTEM_PROMPT_CLONE = """
 Help me rebuild that exact same UI design in a single html file as website.html, below is extracted CSS. Ensure you use the exact same colors and fonts as the original website:
 {}
+
+
 """
 
 SYSTEM_PROMPT_CREATE_STYLE_MD = """

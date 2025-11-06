@@ -13,6 +13,9 @@ def clone_ui():
   show_info("Getting a screenshot from the website...")
   path = get_website_screenshot(url)
   show_info("Done! Now, cloning it with your AI tool.", 'success')
+  if settings['developer']:
+    additional_instructions = prompt_string("Add here additional instructions we should give to the LLM, such as specific stack to use, best practices etc. (Optional)")
+  final_prompt = SYSTEM_PROMPT_CLONE.format(css)+additional_instructions
 
 
 if __name__ == "__main__":
