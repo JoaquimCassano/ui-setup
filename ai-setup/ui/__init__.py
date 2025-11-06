@@ -40,6 +40,17 @@ def show_info(message: str, type:Literal['success', 'info', 'warning', 'error'] 
     emoji = types.get(type, {'color':'blue', 'emoji':'❕'})['emoji']
     rich.print(f'[{color}]{emoji} {message}[/{color}]')
 
+def prompt_string(string: str) -> str:
+    question = [
+        {
+            "type": "input",
+            "name": "response",
+            "message": string
+        }
+    ]
+    answer = prompt(question)
+    return answer["response"]
+
 
 if __name__ == "__main__":
     show_title()
