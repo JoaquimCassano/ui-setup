@@ -1,33 +1,35 @@
 import openai
 import requests, tempfile
+import logging
 from bs4 import BeautifulSoup
 from playwright.sync_api import sync_playwright
 from ...tools import load_settings
-import logging
+from urllib.parse import urljoin
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def get_website_css(url:str) -> str:
-    response = requests.get(url)
-    logger.debug(f"Fetching CSS from {url}")
-    if response.status_code == 200:
-        html = BeautifulSoup(response.content, 'html.parser')
-        styles = html.find_all('link', rel='stylesheet')
-        css_content = ""
-        for style in styles:
-            logger.debug(f"Found stylesheet: {style['href']}")
-            css_url = style['href']
-            if not css_url.startswith('http'):
-                css_url = url + css_url
-            css_response = requests.get(css_url)
-            if css_response.status_code == 200:
-                css_content += css_response.text + "\n"
-        logger.debug("Successfully retrieved CSS content")
-        logger.debug(css_content)
-        return css_content
-    else:
-        raise Exception(f"Failed to retrieve CSS from {url}")
+    r = requests.get(url, timeout=10)
+    r.raise_for_status()
+    soup = BeautifulSoup(r.text, "html.parser")
+
+    css_links = [urljoin(url, link["href"]) for link in soup.find_all("link", rel="stylesheet")]
+    inline_styles = [tag.get_text() for tag in soup.find_all("style")]
+
+    all_css = []
+
+    for css_url in css_links:
+        try:
+            resp = requests.get(css_url, timeout=10)
+            if resp.ok:
+                all_css.append(f"/* {css_url} */\n" + resp.text)
+        except Exception as e:
+            print(f"Erro ao baixar {css_url}: {e}")
+
+    if inline_styles:
+        all_css.append("/* Inline styles */\n" + "\n".join(inline_styles))
+    return "\n".join(all_css)
 
 def get_website_screenshot(url:str) -> str:
     """
