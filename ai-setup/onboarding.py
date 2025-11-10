@@ -1,7 +1,7 @@
 from .ui import ask, show_info, show_title, prompt
 from rich import print as pprint
 from .constants import SETTINGS_PATH
-import os, json
+import os, json, time
 
 def onboard():
   info = {}
@@ -45,6 +45,8 @@ def onboard():
   with open(SETTINGS_PATH, "w") as file:
       file.write(json.dumps(info))
   pprint("\n :tada: Done! Enjoy the app.")
+  time.sleep(3)
+  os.system('cls' if os.name == 'nt' else 'clear')
 
 
 

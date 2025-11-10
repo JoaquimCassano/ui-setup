@@ -1,5 +1,13 @@
 from .features.clone_ui import clone_ui
-from .features.clone_ui.tools import get_website_css, get_website_screenshot
-from .ui import show_title
+from .tools import load_settings
+from .ui import show_title, show_info
+from .onboarding import onboard
 show_title()
+
+try:
+  load_settings()
+except FileNotFoundError:
+  show_info("Looks like it's your first time here. Welcome!", "info")
+  onboard()
+  show_title()
 clone_ui()
