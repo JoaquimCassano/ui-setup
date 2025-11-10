@@ -24,7 +24,7 @@ def clone_ui():
   additional_instructions = ""
   if settings['developer']:
     additional_instructions = "\n\n" + prompt_string("Add here additional instructions we should give to the LLM, such as specific stack to use, best practices etc. (Optional)")
-
+  show_info("Calling the agent to clone the UI... This might take several minutes.", 'info')
   final_prompt = SYSTEM_PROMPT_CLONE.format(css_file.name) + additional_instructions
 
   try:
@@ -49,7 +49,7 @@ def clone_ui():
     if continue_prompt == True:
       show_info("Great! UI cloning process finished.", 'success')
       break
-  show_info("Creating style.md file.", 'info')
+  show_info("Creating style.md file. This might take some minutes.", 'info')
   call_agent(SYSTEM_PROMPT_CREATE_STYLE_MD, continue_latest_chat=True)
   show_info("Done!", 'success')
 
