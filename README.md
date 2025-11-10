@@ -10,6 +10,10 @@
 - pip
 - minimum knowledge with programming OR vibe coding tools.
 
+## Installation
+
+`pip install ui-setup`
+
 ## Usage
 
 Well, the idea here is quite simple:
