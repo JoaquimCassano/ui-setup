@@ -6,7 +6,7 @@ from playwright.sync_api import sync_playwright
 from ...tools import load_settings
 from urllib.parse import urljoin
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.ERROR)
 logger = logging.getLogger(__name__)
 
 def get_website_css(url:str) -> str:
