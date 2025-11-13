@@ -7,10 +7,12 @@ from .onboarding import onboard
 
 def setup_debug_logging(debug: bool) -> None:
   if debug:
+    logging.getLogger().setLevel(logging.DEBUG)
+    for handler in logging.root.handlers:
+      handler.setLevel(logging.DEBUG)
     logging.basicConfig(
       level=logging.DEBUG,
-      format='%(name)s - %(levelname)s - %(message)s',
-      force=True
+      format='%(name)s - %(levelname)s - %(message)s'
     )
 
 def main():

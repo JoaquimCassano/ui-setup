@@ -6,7 +6,7 @@ from playwright.sync_api import sync_playwright
 from ...tools import load_settings
 from urllib.parse import urljoin
 
-logging.basicConfig(level=logging.ERROR, force=True)
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s', force=True)
 logger = logging.getLogger(__name__)
 
 def remove_duplicate_css(css_content: str) -> str:
@@ -24,12 +24,15 @@ def remove_duplicate_css(css_content: str) -> str:
     return '\n'.join(unique_lines)
 
 def get_website_css(url:str) -> str:
+    logger.info(f"Fetching CSS from {url}")
     r = requests.get(url, timeout=10)
     r.raise_for_status()
     soup = BeautifulSoup(r.text, "html.parser")
 
     css_links = [urljoin(url, link["href"]) for link in soup.find_all("link", rel="stylesheet")]
     inline_styles = [tag.get_text() for tag in soup.find_all("style")]
+
+    logger.info(f"Found {len(css_links)} CSS links and {len(inline_styles)} inline styles")
 
     excluded_libraries = [
         'swiper', 'highlight.js', 'hljs', 'toastify',
@@ -43,24 +46,31 @@ def get_website_css(url:str) -> str:
 
     for css_url in css_links:
         if any(lib in css_url.lower() for lib in excluded_libraries):
-            logger.debug(f"Ignorando biblioteca externa: {css_url}")
+            logger.info(f"Skipping external library: {css_url}")
             continue
 
         try:
+            logger.info(f"Downloading CSS from: {css_url}")
             resp = requests.get(css_url, timeout=10)
             if resp.ok:
                 if len(resp.text) > max_css_size:
-                    logger.debug(f"Ignorando arquivo CSS muito grande ({len(resp.text)/1024:.1f}KB): {css_url}")
+                    logger.info(f"Skipping large CSS file ({len(resp.text)/1024:.1f}KB): {css_url}")
                     continue
+                logger.info(f"Added CSS ({len(resp.text)/1024:.1f}KB) from: {css_url}")
                 all_css.append(f"/* {css_url} */\n" + resp.text)
         except Exception as e:
-            logger.debug(f"Erro ao baixar {css_url}: {e}")
+            logger.warning(f"Error downloading {css_url}: {e}")
 
     if inline_styles:
+        logger.info(f"Adding {len(inline_styles)} inline style blocks")
         all_css.append("/* Inline styles */\n" + "\n".join(inline_styles))
 
+    logger.info(f"Removing duplicate CSS rules...")
     combined_css = "\n".join(all_css)
+    original_lines = len(combined_css.split('\n'))
     combined_css = remove_duplicate_css(combined_css)
+    final_lines = len(combined_css.split('\n'))
+    logger.info(f"CSS optimization: {original_lines} -> {final_lines} lines (removed {original_lines - final_lines} duplicates)")
 
     return combined_css
 
